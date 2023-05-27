@@ -1,3 +1,5 @@
+import { SpriteFrame } from "cc";
+
 export enum CactusType {
   CACTUS_LARGE_DOUBLE = "CactusLargeDouble",
   CACTUS_LARGE_SINGLE = "CactusLargeSingle",

@@ -5,12 +5,14 @@ import {
   instantiate,
   Prefab,
   Sprite,
-  Vec3,
   Node,
+  randomRangeInt,
+  director,
 } from "cc";
 import { ModelController } from "./ModelController";
 import { ViewController } from "./ViewController";
-import { DinoControl } from "./DinoControl";
+import { DinoController } from "./DinoControl";
+import { ResultController } from "./ResultController";
 const { ccclass, property } = _decorator;
 
 @ccclass("MenuController")
@@ -24,8 +26,11 @@ export class MenuController extends Component {
   @property({ type: Sprite })
   private spGround: Sprite[] = [null, null];
 
-  @property({ type: DinoControl })
-  private dinoCtrl: DinoControl;
+  @property({ type: Sprite })
+  private spCloud: Sprite[] = [null, null];
+
+  @property({ type: ResultController })
+  private result: ResultController;
 
   @property({ type: Prefab })
   private cactusPrefabs: Prefab | null = null;
@@ -36,35 +41,54 @@ export class MenuController extends Component {
   @property({ type: Node })
   private cactusNodes: Node = null;
 
-  private cactusTypes: CactusType[] = [];
-  private spawnIntervalForCactus: number = 1.5;
-  private spawnIntervalForDinoFly: number = 5.0;
-  private spawnTimer: number = 0;
+  @property({ type: Node })
+  private dinoFlyNodes: Node = null;
 
-  protected start(): void {}
+  private spawnIntervalForCactus: number = 3;
+  private spawnTimerCactus: number = 0;
+
+  private spawnIntervalForDinoFly: number = 20.0;
+  private spawnTimerDino: number = 0;
+
+  private speed: number = 300;
+
+  protected onLoad(): void {
+    this.result.resetScore();
+  }
+
+  startGame() {
+    this.result.hideResult();
+    director.resume();
+  }
 
   protected update(deltaTime: number): void {
     this.groundMoving(deltaTime);
+    this.cloudMoving(deltaTime);
 
     // Time for cactus spawn
-    this.spawnTimer += deltaTime;
+    this.spawnTimerCactus += deltaTime;
 
-    if (this.spawnTimer >= this.spawnIntervalForCactus) {
-      this.spawnCactusAndDinoFly();
-      this.spawnTimer = 0;
+    if (this.spawnTimerCactus >= this.spawnIntervalForCactus) {
+      this.spawnCactus();
+      this.spawnTimerCactus = 0;
     }
-    if (this.spawnTimer >= this.spawnIntervalForDinoFly) {
-      this.spawnCactusAndDinoFly();
-      this.spawnTimer = 0;
+
+    // time for dino spawn
+    this.spawnTimerDino += deltaTime;
+
+    if (this.spawnTimerDino >= this.spawnIntervalForDinoFly) {
+      this.spawnDinoFly();
+      this.spawnTimerDino = 0;
     }
 
     this.cactusMoving(deltaTime);
+    this.dinoFlyMoving(deltaTime);
   }
 
   groundMoving(value: number) {
     for (let i = 0; i < this.spGround.length; i++) {
       const ground = this.spGround[i].node.getPosition();
-      ground.x -= 600 * value;
+      ground.x -= this.speed * value;
 
       if (ground.x <= -1500) {
         ground.x = 1500;
@@ -74,53 +98,24 @@ export class MenuController extends Component {
     }
   }
 
-  createCactus(type: CactusType) {
-    const cactusNode = instantiate(this.cactusPrefabs);
-    this.cactusNodes.addChild(cactusNode);
-    console.log("run create");
+  cloudMoving(value: number) {
+    for (let i = 0; i < this.spCloud.length; i++) {
+      const cloud = this.spCloud[i].node.getPosition();
 
-    switch (type) {
-      case CactusType.CACTUS_LARGE_DOUBLE:
-        console.log("Case 1");
-        break;
+      cloud.x -= (this.speed / 4) * value;
 
-      case CactusType.CACTUS_LARGE_SINGLE:
-        console.log("Case 2");
-        break;
+      if (cloud.x <= -320) {
+        cloud.x = 780;
+        cloud.y = randomRangeInt(-150, 15);
+      }
 
-      case CactusType.CACTUS_LARGE_TRIPLE:
-        console.log("Case 3");
-        break;
-
-      case CactusType.CACTUS_SMALL_DOUBLE:
-        console.log("Case 4");
-        break;
-
-      case CactusType.CACTUS_SMALL_SINGLE:
-        console.log("Case 5");
-        break;
-
-      case CactusType.CACTUS_SMALL_TRIPLE:
-        console.log("Case 6");
-        break;
-
-      default:
-        break;
+      this.spCloud[i].node.setPosition(cloud);
     }
   }
 
-  createDinoFlying() {
-    const dinoFlyNode = instantiate(this.dinoFlyPrefab);
-    dinoFlyNode.getPosition();
-    console.log(dinoFlyNode.getPosition());
-  }
-
-  spawnCactusAndDinoFly() {
-    const randomIndex = Math.floor(Math.random() * this.cactusTypes.length);
-    const cactusType = this.cactusTypes[randomIndex];
-
-    this.createCactus(cactusType);
-    this.createDinoFlying();
+  spawnCactus() {
+    const cactusNode = instantiate(this.cactusPrefabs);
+    this.cactusNodes.addChild(cactusNode);
   }
 
   cactusMoving(value: number) {
@@ -130,7 +125,7 @@ export class MenuController extends Component {
       for (let i = 0; i < cactusPool.length; i++) {
         const cactus = cactusPool[i];
         const pos = cactus.getPosition();
-        pos.x -= 600 * value;
+        pos.x -= this.speed * value;
 
         if (pos.x <= -1500) {
           cactus.removeFromParent();
@@ -142,5 +137,27 @@ export class MenuController extends Component {
     }
   }
 
-  dinoFlyMoving(value: number) {}
+  spawnDinoFly() {
+    console.log("spawn Dino");
+    const dinoFlyNode = instantiate(this.dinoFlyPrefab);
+    this.dinoFlyNodes.addChild(dinoFlyNode);
+  }
+
+  dinoFlyMoving(value: number) {
+    const dinoFlyPool = this.dinoFlyNodes?.children;
+
+    if (dinoFlyPool) {
+      for (let i = 0; i < dinoFlyPool.length; i++) {
+        const dinoFly = dinoFlyPool[i];
+        const pos = dinoFly.getPosition();
+        pos.x -= this.speed * value;
+
+        if (pos.x <= -1500) {
+          dinoFly.removeFromParent();
+        } else {
+          dinoFly.position = pos;
+        }
+      }
+    }
+  }
 }

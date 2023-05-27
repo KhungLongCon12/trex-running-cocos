@@ -7,19 +7,25 @@ import {
   KeyCode,
   tween,
   Vec3,
-  Node,
+  Animation,
 } from "cc";
 const { ccclass, property } = _decorator;
 
-@ccclass("DinoControl")
-export class DinoControl extends Component {
+@ccclass("DinoController")
+export class DinoController extends Component {
   private jumpingGap: number = 200;
   private jumpDuration: number = 0.5;
   private isJump: boolean = false;
-  private hit: boolean = false;
+  private dinoAnim: Animation | null = null;
+  private dinoLocation: Vec3;
+  private hit: boolean;
 
-  protected start(): void {
+  protected onLoad(): void {
     this.initListener();
+
+    this.dinoAnim = this.getComponent(Animation);
+
+    this.resetDino();
   }
 
   initListener() {
@@ -29,12 +35,12 @@ export class DinoControl extends Component {
   onClickJump(event: EventKeyboard) {
     if (event.keyCode === KeyCode.SPACE && !this.isJump) {
       this.isJump = true;
-      this.jumping();
+      this.getJumping();
     }
   }
 
-  jumping() {
-    const startPosition = this.node.position.clone();
+  getJumping() {
+    const startPosition = this.node.getPosition();
 
     const targetPosition = new Vec3(
       startPosition.x,
@@ -42,8 +48,14 @@ export class DinoControl extends Component {
       0
     );
 
+    this.dinoAnim.stop();
+
     tween(this.node)
-      .to(this.jumpDuration / 2, { position: targetPosition })
+      .to(
+        this.jumpDuration / 2,
+        { position: targetPosition },
+        { easing: "sineOut" }
+      )
       .call(() => {
         tween(this.node)
           .to(this.jumpDuration / 2, { position: startPosition })
@@ -51,7 +63,14 @@ export class DinoControl extends Component {
             this.isJump = false;
           })
           .start();
+        this.dinoAnim.play();
       })
       .start();
+  }
+
+  resetDino() {
+    this.dinoLocation = new Vec3(-394, -75, 0);
+    this.node.setPosition(this.dinoLocation);
+    this.hit = false;
   }
 }
