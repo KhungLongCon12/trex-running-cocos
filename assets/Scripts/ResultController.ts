@@ -1,36 +1,26 @@
-import { _decorator, Component, Label, Node } from "cc";
+import { _decorator, Component, Label, UIOpacity, Animation } from "cc";
+import { GameModel } from "./GameModel";
 const { ccclass, property } = _decorator;
 
 @ccclass("ResultController")
 export class ResultController extends Component {
-  @property({ type: Label })
-  private score: Label;
+  @property({ type: GameModel })
+  private model: GameModel;
 
   @property({ type: Label })
-  private highScore: Label;
+  private highScoreLabel: Label;
 
-  private maxScore: number = 0;
-  private currentScore: number = 0;
-
-  protected start(): void {}
-
-  updateScore(scoreValue: number) {
-    this.currentScore = scoreValue;
-    this.score.string = `${this.currentScore}`;
-  }
-
-  addScore() {
-    this.updateScore(this.currentScore++);
-  }
+  private highScore: number = 0;
 
   resetScore() {
-    this.updateScore(0);
     this.hideResult();
+    // this.getElapsedTime();
   }
 
   showResult() {
-    this.maxScore = Math.max(this.maxScore, this.currentScore);
-    this.highScore.string = `HI  ${this.maxScore}`;
+    this.highScore = Math.max(this.highScore, this.model.StartTime);
+
+    this.highScoreLabel.string = `HI ${this.highScore - 1}`;
 
     this.node.active = true;
   }

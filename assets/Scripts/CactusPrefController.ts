@@ -25,7 +25,7 @@ export class CactusPrefController extends Component {
   }
 
   getRandomCactus() {
-    this.randomNumber = randomRangeInt(0, 4);
+    this.randomNumber = randomRangeInt(0, 5);
     this.cactus.spriteFrame = this.cactusSprites[this.randomNumber];
 
     const setting = this.cactus.node.getComponent(UITransform);
@@ -34,30 +34,32 @@ export class CactusPrefController extends Component {
     switch (this.randomNumber) {
       case (this.randomNumber = 0):
         setting.setContentSize(70, 70); // for large Double
-        editingCollider.size = new Size(70, 70);
+        editingCollider.size = new Size(60, 70);
         break;
 
       case (this.randomNumber = 1):
         setting.setContentSize(40, 70); // for large Single
-        editingCollider.size = new Size(40, 70);
+        editingCollider.size = new Size(30, 70);
         break;
 
       case (this.randomNumber = 2):
         setting.setContentSize(68, 70); // for small double
-        editingCollider.size = new Size(68, 70);
+        editingCollider.size = new Size(50, 70);
         break;
 
       case (this.randomNumber = 3):
-        setting.setContentSize(34, 70); // for small single
-        editingCollider.size = new Size(34, 70);
+        setting.setContentSize(34, 50); // for small single
+        editingCollider.size = new Size(25, 50);
         break;
 
       case (this.randomNumber = 4):
         setting.setContentSize(80, 50); // for small triple
-        editingCollider.size = new Size(80, 50);
+        editingCollider.size = new Size(70, 60);
         break;
 
-      default:
+      case (this.randomNumber = 5):
+        setting.setContentSize(100, 70); // for large triple
+        editingCollider.size = new Size(110, 80);
         break;
     }
   }

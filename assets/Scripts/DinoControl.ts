@@ -9,6 +9,7 @@ import {
   Vec3,
   Animation,
 } from "cc";
+import { GameModel } from "./GameModel";
 const { ccclass, property } = _decorator;
 
 @ccclass("DinoController")
@@ -18,7 +19,14 @@ export class DinoController extends Component {
   private isJump: boolean = false;
   private dinoAnim: Animation | null = null;
   private dinoLocation: Vec3;
-  private hit: boolean;
+  private _hit: boolean;
+
+  public get hit(): boolean {
+    return this._hit;
+  }
+  public set hit(value: boolean) {
+    this._hit = value;
+  }
 
   protected onLoad(): void {
     this.initListener();

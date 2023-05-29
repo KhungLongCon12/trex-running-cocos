@@ -163,6 +163,10 @@
       {
         "__uuid__": "aae158e3-cce3-49a6-ae92-222f236c7943@f9941",
         "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "f09b2cad-ec92-437c-859b-426a7f576b49@f9941",
+        "__expectedType__": "cc.SpriteFrame"
       }
     ],
     "cactus": {
@@ -198,14 +202,14 @@
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 1,
-      "height": 1
+      "width": 80,
+      "height": 50
     },
     "_id": ""
   },
   {
     "__type__": "cc.CompPrefabInfo",
-    "fileId": "8fbZEa7RNNC4FT/H8n3lk3"
+    "fileId": "93j95anuZLKIc9WVcRmDXF"
   },
   {
     "__type__": "cc.PrefabInfo",
