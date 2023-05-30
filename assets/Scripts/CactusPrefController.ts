@@ -25,11 +25,11 @@ export class CactusPrefController extends Component {
   }
 
   getRandomCactus() {
-    this.randomNumber = randomRangeInt(0, 5);
-    this.cactus.spriteFrame = this.cactusSprites[this.randomNumber];
-
     const setting = this.cactus.node.getComponent(UITransform);
     const editingCollider = this.cactus.node.getComponent(BoxCollider2D);
+
+    this.randomNumber = randomRangeInt(0, 5);
+    this.cactus.spriteFrame = this.cactusSprites[this.randomNumber];
 
     switch (this.randomNumber) {
       case (this.randomNumber = 0):

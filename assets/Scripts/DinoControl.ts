@@ -8,12 +8,19 @@ import {
   tween,
   Vec3,
   Animation,
+  Contact2DType,
+  Collider2D,
+  IPhysics2DContact,
 } from "cc";
 import { GameModel } from "./GameModel";
+import { GameAudio } from "./GameAudio";
 const { ccclass, property } = _decorator;
 
 @ccclass("DinoController")
 export class DinoController extends Component {
+  @property({ type: GameAudio })
+  private audio: GameAudio;
+
   private jumpingGap: number = 200;
   private jumpDuration: number = 0.5;
   private isJump: boolean = false;
@@ -49,6 +56,7 @@ export class DinoController extends Component {
 
   getJumping() {
     const startPosition = this.node.getPosition();
+    this.audio.onAudioQueue(0);
 
     const targetPosition = new Vec3(
       startPosition.x,
@@ -80,5 +88,21 @@ export class DinoController extends Component {
     this.dinoLocation = new Vec3(-394, -75, 0);
     this.node.setPosition(this.dinoLocation);
     this.hit = false;
+  }
+
+  getContactCactus() {
+    let collider = this.node.getComponent(Collider2D);
+
+    if (collider) {
+      collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+    }
+  }
+
+  onBeginContact(
+    selfCollider: Collider2D,
+    otherCollider: Collider2D,
+    contact: IPhysics2DContact | null
+  ) {
+    this.hit = true;
   }
 }

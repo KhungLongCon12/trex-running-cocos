@@ -11,23 +11,20 @@ import {
   Label,
   PolygonCollider2D,
   Animation,
-  Contact2DType,
-  IPhysics2DContact,
-  UIOpacity,
 } from "cc";
 import { GameModel } from "./GameModel";
-import { ViewModel } from "./ViewModel";
 import { ResultController } from "./ResultController";
 import { DinoController } from "./DinoControl";
+import { GameAudio } from "./GameAudio";
 const { ccclass, property } = _decorator;
 
 @ccclass("GameController")
 export class GameController extends Component {
-  @property({ type: ViewModel })
-  private view: ViewModel;
-
   @property({ type: GameModel })
   private model: GameModel;
+
+  @property({ type: GameAudio })
+  private audio: GameAudio;
 
   @property({ type: Sprite })
   private spGround: Sprite[] = [null, null];
@@ -72,6 +69,7 @@ export class GameController extends Component {
   getElapsedTime(): void {
     const scoreLabel = this.scoreLabel.getComponent(Label);
     scoreLabel.string = this.model.StartTime.toString();
+
     if (this.model.IsOver === true) {
       this.model.StartTime = 0;
     } else {
@@ -83,18 +81,7 @@ export class GameController extends Component {
   }
 
   protected update(deltaTime: number): void {
-    const scoreAnim = this.scoreLabel.getComponent(Animation);
-
-    if (this.model.StartTime === this.score) {
-      this.score += 100;
-      scoreAnim.play("ScoreAnim");
-
-      //set condition to play anim
-      setTimeout(() => {
-        console.log("ScoreAnim");
-        scoreAnim.stop();
-      }, 2000);
-    }
+    this.getScoreSparkle();
 
     this.groundMoving(deltaTime);
     this.cloudMoving(deltaTime);
@@ -135,9 +122,9 @@ export class GameController extends Component {
   }
 
   gameOver() {
+    this.audio.onAudioQueue(1);
     this.result.showResult();
     this.model.IsOver = true;
-
     director.pause();
   }
 
@@ -231,27 +218,12 @@ export class GameController extends Component {
     }
   }
 
-  getContactCactus() {
-    let collider = this.dino.getComponent(Collider2D);
-
-    if (collider) {
-      collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
-    }
-  }
-
-  onBeginContact(
-    selfCollider: Collider2D,
-    otherCollider: Collider2D,
-    contact: IPhysics2DContact | null
-  ) {
-    this.dino.hit = true;
-  }
-
   getDinoStruck() {
-    this.getContactCactus();
+    this.dino.getContactCactus();
 
     if (this.dino.hit == true) {
       this.model.IsOver = true;
+
       this.gameOver();
     }
   }
@@ -274,5 +246,35 @@ export class GameController extends Component {
 
     this.model.StartTime = 0;
     this.model.IsOver = false;
+  }
+
+  getIncreaseLevel() {
+    console.log(
+      "getIncreaseLevel ->",
+      this.model.Speed,
+      this.model.SpawnIntervalForCactus,
+      this.model.SpawnIntervalForDinoFly
+    );
+
+    this.model.Speed += 100;
+    this.model.SpawnIntervalForCactus -= 0.5;
+    this.model.SpawnIntervalForDinoFly -= 0.1;
+  }
+
+  getScoreSparkle() {
+    const scoreAnim = this.scoreLabel.getComponent(Animation);
+
+    if (this.model.StartTime === this.score) {
+      this.score += 100;
+      this.audio.onAudioQueue(2);
+      scoreAnim.play("ScoreAnim");
+      this.getIncreaseLevel();
+
+      //set condition to play anim
+      setTimeout(() => {
+        console.log("ScoreAnim");
+        scoreAnim.stop();
+      }, 2000);
+    }
   }
 }
