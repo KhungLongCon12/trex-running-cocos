@@ -11,17 +11,23 @@ import {
   Label,
   PolygonCollider2D,
   Animation,
+  Contact2DType,
+  IPhysics2DContact,
 } from "cc";
 import { GameModel } from "./GameModel";
 import { ResultController } from "./ResultController";
 import { DinoController } from "./DinoControl";
 import { GameAudio } from "./GameAudio";
+import { GameView } from "./GameView";
 const { ccclass, property } = _decorator;
 
 @ccclass("GameController")
 export class GameController extends Component {
   @property({ type: GameModel })
   private model: GameModel;
+
+  @property({ type: GameView })
+  private view: GameView;
 
   @property({ type: GameAudio })
   private audio: GameAudio;
@@ -58,7 +64,7 @@ export class GameController extends Component {
   private score: number = 100;
 
   protected onLoad(): void {
-    this.result.resetScore();
+    this.view.getHideResult();
   }
 
   protected start(): void {
@@ -117,19 +123,24 @@ export class GameController extends Component {
   }
 
   startGame() {
-    this.result.hideResult();
+    this.view.getHideResult();
     director.resume();
   }
 
   gameOver() {
     this.audio.onAudioQueue(1);
     this.result.showResult();
+    this.view.getShowGameOver();
+
+    // this.dino.getImageWhenDie()
+
     this.model.IsOver = true;
+
     director.pause();
   }
 
   resetGame() {
-    this.result.resetScore();
+    this.view.getResetScore();
     this.startGame();
   }
 
@@ -168,11 +179,11 @@ export class GameController extends Component {
 
   cactusMoving(value: number) {
     const cactusPool = this.cactusNodes?.children;
-
     if (cactusPool) {
       for (let i = 0; i < cactusPool.length; i++) {
         const cactus = cactusPool[i];
         const pos = cactus.getPosition();
+
         pos.x -= this.model.Speed * value;
 
         if (pos.x <= -1500) {
@@ -182,10 +193,7 @@ export class GameController extends Component {
           cactus.position = pos;
         }
 
-        this.cactusNodes
-          .getChildByName("Cactus")
-          .getComponent(Collider2D)
-          .apply();
+        cactus.getComponent(Collider2D).apply();
       }
     }
   }
@@ -193,6 +201,10 @@ export class GameController extends Component {
   spawnDinoFly() {
     const dinoFlyNode = instantiate(this.dinoFlyPrefab);
     this.dinoFlyNodes.addChild(dinoFlyNode);
+    this.dinoFlyNodes
+      .getChildByName("DinoFly")
+      .getComponent(PolygonCollider2D)
+      .apply();
   }
 
   dinoFlyMoving(value: number) {
@@ -201,6 +213,7 @@ export class GameController extends Component {
     if (dinoFlyPool) {
       for (let i = 0; i < dinoFlyPool.length; i++) {
         const dinoFly = dinoFlyPool[i];
+
         const pos = dinoFly.getPosition();
         pos.x -= this.model.Speed * value;
 
@@ -210,16 +223,30 @@ export class GameController extends Component {
           dinoFly.position = pos;
         }
 
-        this.dinoFlyNodes
-          .getChildByName("DinoFly")
-          .getComponent(PolygonCollider2D)
-          .apply();
+        dinoFly.getComponent(PolygonCollider2D).apply();
       }
     }
   }
 
+  getContactCactus() {
+    let collider = this.dino.getComponent(Collider2D);
+
+    if (collider) {
+      collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+    }
+  }
+
+  onBeginContact(
+    selfCollider: Collider2D,
+    otherCollider: Collider2D,
+    contact: IPhysics2DContact | null
+  ) {
+    console.log("hit");
+    this.dino.hit = true;
+  }
+
   getDinoStruck() {
-    this.dino.getContactCactus();
+    this.getContactCactus();
 
     if (this.dino.hit == true) {
       this.model.IsOver = true;
@@ -230,7 +257,7 @@ export class GameController extends Component {
 
   onClickRestartBtn() {
     director.resume();
-    this.result.resetScore();
+    this.view.getResetScore();
     this.resetAllPos();
   }
 
@@ -249,13 +276,6 @@ export class GameController extends Component {
   }
 
   getIncreaseLevel() {
-    console.log(
-      "getIncreaseLevel ->",
-      this.model.Speed,
-      this.model.SpawnIntervalForCactus,
-      this.model.SpawnIntervalForDinoFly
-    );
-
     this.model.Speed += 100;
     this.model.SpawnIntervalForCactus -= 0.5;
     this.model.SpawnIntervalForDinoFly -= 0.1;

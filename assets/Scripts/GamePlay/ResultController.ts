@@ -12,20 +12,20 @@ export class ResultController extends Component {
 
   private highScore: number = 0;
 
-  resetScore() {
-    this.hideResult();
-    // this.getElapsedTime();
-  }
+  // resetScore() {
+  //   this.hideResult();
+
+  // }
 
   showResult() {
     this.highScore = Math.max(this.highScore, this.model.StartTime);
 
     this.highScoreLabel.string = `HI ${this.highScore - 1}`;
 
-    this.node.active = true;
+    // this.node.active = true;
   }
 
-  hideResult() {
-    this.node.active = false;
-  }
+  // hideResult() {
+  //   this.node.active = false;
+  // }
 }

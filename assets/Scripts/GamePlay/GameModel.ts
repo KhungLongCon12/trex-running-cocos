@@ -25,7 +25,7 @@ export class GameModel extends Component {
   }
 
   public get SpawnIntervalForCactus(): number {
-    this._spawnIntervalForCactus = randomRangeInt(2.0, 10.0);
+    this._spawnIntervalForCactus = randomRangeInt(1.0, 20.0);
     return this._spawnIntervalForCactus;
   }
   public set SpawnIntervalForCactus(value: number) {
@@ -33,7 +33,7 @@ export class GameModel extends Component {
   }
 
   public get SpawnIntervalForDinoFly(): number {
-    this._spawnIntervalForDinoFly = randomRangeInt(10.0, 50.0);
+    this._spawnIntervalForDinoFly = randomRangeInt(15.0, 20.0);
     return this._spawnIntervalForDinoFly;
   }
   public set SpawnIntervalForDinoFly(value: number) {

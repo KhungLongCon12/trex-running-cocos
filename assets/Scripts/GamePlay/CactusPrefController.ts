@@ -49,7 +49,7 @@ export class CactusPrefController extends Component {
 
       case (this.randomNumber = 3):
         setting.setContentSize(34, 50); // for small single
-        editingCollider.size = new Size(25, 50);
+        editingCollider.size = new Size(30, 50);
         break;
 
       case (this.randomNumber = 4):
