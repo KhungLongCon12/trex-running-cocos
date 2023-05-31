@@ -1366,6 +1366,8 @@
     "audio": {
       "__id__": 37
     },
+    "dinoFrames": [],
+    "dinoSprite": null,
     "_id": "236DDsrklBfJk4zysrTAWS"
   },
   {
@@ -2502,10 +2504,9 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "_speed": 500,
+    "_speed": 300,
     "_spawnIntervalForCactus": 3,
     "_spawnIntervalForDinoFly": 10,
-    "_startTime": 0,
     "_id": "46mgxc9JlAro8p7bkYDBVV"
   },
   {
@@ -3035,9 +3036,7 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "_cameraComponent": {
-      "__id__": 51
-    },
+    "_cameraComponent": null,
     "_alignCanvasWithScreen": true,
     "_id": "79XFWgGsFHe6lxFWWWKtTu"
   },
