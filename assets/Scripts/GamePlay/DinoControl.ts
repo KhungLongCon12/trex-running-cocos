@@ -25,8 +25,8 @@ export class DinoController extends Component {
   @property({ type: SpriteFrame })
   private dinoFrames: SpriteFrame[] = [];
 
-  @property({ type: SpriteFrame })
-  private dinoSprite: Sprite | null = null;
+  // @property({ type: SpriteFrame })
+  // private dinoSprite: Sprite | null = null;
 
   private jumpingGap: number = 200;
   private jumpDuration: number = 0.5;
@@ -44,10 +44,15 @@ export class DinoController extends Component {
 
   protected onLoad(): void {
     this.dinoAnim = this.getComponent(Animation);
-
+    // this.node.getComponent(Animation).play("DinoRunnerAnimation");
+    console.log(this.dinoAnim);
     this.initListener();
 
     this.resetDino();
+  }
+
+  protected start(): void {
+    this.dinoAnim.play("DinoRunnerAnimation");
   }
 
   initListener() {
@@ -105,11 +110,15 @@ export class DinoController extends Component {
     contact: IPhysics2DContact | null
   ) {
     this.hit = true;
+    console.log("1 hit");
+    this.dinoAnim.stop();
+    this.node.getComponent(Sprite).spriteFrame = this.dinoFrames[0];
   }
 
   resetDino() {
     this.dinoLocation = new Vec3(-394, -75, 0);
     this.node.setPosition(this.dinoLocation);
     this.hit = false;
+    this.dinoAnim.play();
   }
 }
