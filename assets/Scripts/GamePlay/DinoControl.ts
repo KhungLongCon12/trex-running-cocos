@@ -44,8 +44,6 @@ export class DinoController extends Component {
 
   protected onLoad(): void {
     this.dinoAnim = this.getComponent(Animation);
-    // this.node.getComponent(Animation).play("DinoRunnerAnimation");
-    console.log(this.dinoAnim);
     this.initListener();
 
     this.resetDino();
@@ -57,12 +55,19 @@ export class DinoController extends Component {
 
   initListener() {
     input.on(Input.EventType.KEY_DOWN, this.onClickJump, this);
+    input.on(Input.EventType.KEY_DOWN, this.onClickDuck, this);
   }
 
   onClickJump(event: EventKeyboard) {
     if (event.keyCode === KeyCode.SPACE && !this.isJump) {
       this.isJump = true;
       this.getJumping();
+    }
+  }
+
+  onClickDuck(event: EventKeyboard) {
+    if (event.keyCode === KeyCode.ARROW_DOWN) {
+      console.log("Duck");
     }
   }
 
@@ -110,7 +115,6 @@ export class DinoController extends Component {
     contact: IPhysics2DContact | null
   ) {
     this.hit = true;
-    console.log("1 hit");
     this.dinoAnim.stop();
     this.node.getComponent(Sprite).spriteFrame = this.dinoFrames[0];
   }

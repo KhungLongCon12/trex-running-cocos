@@ -68,19 +68,19 @@ export class GameController extends Component {
 
   protected onLoad(): void {
     director.resume();
-    console.log("check run");
     this.view.getHideResult();
     this.getElapsedTime();
   }
 
   // Calculate time form playing
   getElapsedTime(): void {
-    // const scoreLabel = this.scoreLabel.getComponent(Label);
     this.scoreLabel.string = this.model.StartTime.toString();
 
     if (this.model.IsOver === true) {
+      console.log("run this start if 1");
       this.model.StartTime = 0;
     } else {
+      console.log("run this start if 2");
       this.model.StartTime += 1;
       this.scheduleOnce(function () {
         this.getElapsedTime();
@@ -91,7 +91,6 @@ export class GameController extends Component {
   protected update(deltaTime: number): void {
     this.getScoreSparkle();
 
-    console.log(this.model.IsOver);
     this.groundMoving(deltaTime);
     this.cloudMoving(deltaTime);
 
@@ -134,7 +133,6 @@ export class GameController extends Component {
   }
 
   resetGame() {
-    console.log("check this reset", this.model.StartTime);
     this.score = 100;
     this.model.StartTime = 0;
     this.model.IsOver = false;
@@ -230,7 +228,6 @@ export class GameController extends Component {
 
     if (this.dino.hit === true) {
       this.gameOver();
-      console.log(this.model.IsOver);
     }
   }
 
@@ -240,8 +237,8 @@ export class GameController extends Component {
 
     this.resetGame();
     this.startGame();
-    // setTimeout(() => {
-    // }, 1500);
+
+    //this.getElapsedTime();
   }
 
   resetAllPos() {
